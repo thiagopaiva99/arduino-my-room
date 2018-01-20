@@ -1,38 +1,30 @@
-#include <SPI.h> //Inclui a biblioteca SPI.h
-#include <Ethernet.h> //Inclui a biblioteca Ethernet.h
-
-// Configurações para o Ethernet Shield
-byte mac[] = { 0x90, 0xA2, 0xDA, 0x0D, 0x83, 0xEA }; // Entre com o valor do MAC
+// including some libs
+#include <SPI.h>
+#include <Ethernet.h>
 
 // network config
-IPAddress ip(192,168,1,30);            // config the arduino IP
-byte gateway[] = { 192 , 168, 1, 1 };  // config the default gateway
-byte subnet[] = { 255, 255, 255, 0 };  // config the subnet mask
-EthernetServer server(80);             // init the server in the IP passed
+IPAddress ip(192,168,1,30);                              
+byte mac[]     = { 0x90, 0xA2, 0xDA, 0x0D, 0x83, 0xEA }; 
+byte gateway[] = { 192 , 168, 1, 1 };                    
+byte subnet[] = { 255, 255, 255, 0 };                    
+EthernetServer server(80);                               
 
 const int LM35 = A0;
-float temperatura;
-
-const int ldr    = A1;
+const int ldr  = A1;
 
 void setup() {
-  Serial.begin(9600);
   Ethernet.begin(mac, ip);
 }
 
 void loop() {
-  temperatura = (float(analogRead(LM35))*5/(1023))/0.01;
-
   EthernetClient client = server.available(); // check if has a client connected
 
   if ( client ) {
-    boolean currentLineIsBlank = true; // A requisição HTTP termina com uma linha em branco Indica o fim da linha
-    String valPag;
+    boolean currentLineIsBlank = true;
 
     while ( client.connected() ) {
       if ( client.available() ) {
-        char c = client.read(); //Variável para armazenar os caracteres que forem recebidos
-        valPag.concat(c);       // Pega os valor após o IP do navegador ex: 192.168.1.2/0001        
+        char c = client.read();
         
         if ( c == '\n' && currentLineIsBlank ) {
           client.println("HTTP/1.1 200 OK");
@@ -57,7 +49,7 @@ void loop() {
           
           client.print("<div class=\"temp\">");   
           client.print("Temperatura do quarto: ");
-          client.print(temperatura);
+          client.print(getTemp());
           client.print("ºC");
           client.print("</div>");
           
@@ -78,19 +70,18 @@ void loop() {
           client.print("</body></html>");
 
           break;
+        }        
+      }      
+    }
+    
+    delay(3);
+    client.stop();    
+  }  
+}
 
-        } //Fecha if (c == '\n' && currentLineIsBlank)
-        
-      } //Fecha if (client.available())
-      
-    } //Fecha While (client.connected())
-    
-    delay(3);// Espera um tempo para o navegador receber os dados
-    client.stop(); // Fecha a conexão
-    
-  } //Fecha if(client)
-  
-} //Fecha loop
+float getTemp() {
+   return (float(analogRead(LM35))*5/(1023))/0.01; 
+}
 
 const char * getDoorStatus() {
    return "aberto"; 
