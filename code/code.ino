@@ -38,39 +38,43 @@ void loop() {
           client.println("HTTP/1.1 200 OK");
           client.println("Content-Type: text/html");
           client.println();
-          client.print("<html><head><meta charset=\"utf-8\"><meta http-equiv=\"refresh\" content=\"5; url=http://192.168.1.30/\"><link href=\"https://fonts.googleapis.com/css?family=Ubuntu\" rel=\"stylesheet\"><title>@thiagopaiva99 - my room status</title></head><body>");
+          client.print("<html><head><meta charset=\"utf-8\"><meta http-equiv=\"refresh\" content=\"5; url=http://192.168.1.30/\"><meta name=\"viewport\" content=\"width=device-width, initial-scale=1.0\"><link href=\"https://fonts.googleapis.com/css?family=Ubuntu\" rel=\"stylesheet\"><title>@thiagopaiva99 - my room status</title></head><body>");
           
           // styles - minify all later
           // body
-          client.print("<style>body{font-family:Ubuntu;}");
-          
-          // temp
-          client.print(".temp{box-shadow:5px 5px 10px rgba(0,0,0,.3);cursor:pointer;position:fixed;top:0;right:0;margin:25px;background:#eee;padding:10px;border-radius:4px;text-transform:uppercase}");
+          client.print("<style>body{font-family:Ubuntu;background:#BBDEFB;}");
           
           // widgets
           client.print(".widgets{display:flex;width:100%;height:100%;justify-content:center;align-items:center}");
           
           // door
-          client.print(".door,.light{margin:15px;height:200px;width:200px;background:#eee;text-align:center;border-radius:4px;box-shadow:5px 5px 10px rgba(0,0,0,.3);display:flex;justify-content:center;align-items:center}");          
+          client.print(".door,.light,.temp{color:white;margin:15px;height:200px;width:200px;background:#2196F3;text-align:center;border-radius:4px;box-shadow:5px 5px 10px rgba(0,0,0,.3);display:flex;justify-content:center;align-items:center;flex-direction:column;}");          
+          client.print(".text{font-size: 2em;font-weight: bold;}");
           
           client.print("</style>");
           
-          client.print("<div class=\"temp\">");   
-          client.print("Temperatura do quarto: ");
-          client.print(getTemp());
-          client.print("ºC");
-          client.print("</div>");
-          
           client.print("<div class=\"widgets\">");
           
+          client.print("<div class=\"temp\">");
+          client.print("Temperatura<br>");
+          client.print("<span class=\"text\">");
+          client.print(getTemp());
+          client.print("ºC");
+          client.print("</span>");
+          client.print("</div>");
+          
           client.print("<div class=\"door\">");
-          client.print("Porta:<br>");
+          client.print("Porta<br>");
+          client.print("<span class=\"text\">");
           client.print(getDoorStatus());
+          client.print("</span>");
           client.print("</div>");
           
           client.print("<div class=\"light\">");
-          client.print("Luz:<br>");
+          client.print("Luz<br>");
+          client.print("<span class=\"text\">");
           client.print(getLightStatus());
+          client.print("</span>");
           client.print("</div>");
           
           client.print("</div>");
