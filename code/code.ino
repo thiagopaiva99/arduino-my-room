@@ -1,22 +1,30 @@
 // including some libs
 #include <SPI.h>
 #include <Ethernet.h>
+#include <Ultrasonic.h>
+
+#define pino_trigger 4
+#define pino_echo 5
+
+Ultrasonic ultrasonic(pino_trigger, pino_echo);
 
 // network config
 IPAddress ip(192,168,1,30);                              
 byte mac[]     = { 0x90, 0xA2, 0xDA, 0x0D, 0x83, 0xEA }; 
 byte gateway[] = { 192 , 168, 1, 1 };                    
-byte subnet[] = { 255, 255, 255, 0 };                    
+byte subnet[]  = { 255, 255, 255, 0 };                    
 EthernetServer server(80);                               
 
 const int LM35 = A0;
 const int ldr  = A1;
 
 void setup() {
+  Serial.begin(9600);
   Ethernet.begin(mac, ip);
 }
 
-void loop() {
+void loop() { 
+  
   EthernetClient client = server.available(); // check if has a client connected
 
   if ( client ) {
@@ -83,8 +91,11 @@ float getTemp() {
    return (float(analogRead(LM35))*5/(1023))/0.01; 
 }
 
-const char * getDoorStatus() {
-   return "aberto"; 
+const char * getDoorStatus() {  
+  if ( ultrasonic.convert(ultrasonic.timing(), Ultrasonic::CM) >= 116.5 ) return "Aberta";
+  else return "Fechada";
+  
+  return ""; 
 }
 
 const char * getLightStatus() {   
